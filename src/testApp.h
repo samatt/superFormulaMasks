@@ -7,6 +7,12 @@
 
 class testApp : public ofBaseApp{
     
+typedef enum{
+    circle =0,
+    supershape,
+    supershapeFFT,
+}drawMode;
+    
 public:
     void setup();
     void update();
@@ -22,8 +28,11 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void superShape();
+    void circleFFT();
+    void superShapeFFT();
     void setupGUI();
     void guiEvent(ofxUIEventArgs &e);
+    void setupShaper();
 	ofxOscReceiver oscIn;
 	ofxOscSender oscOut;
     vector<float> fftData;
@@ -47,9 +56,10 @@ public:
     float n3_;
     float stkWeight_;
     
+    bool bFFT;
     ofMesh mesh;
-    vector<ofVec2f> triangle;
-    
+    drawMode currentMode;
+    vector<ofVec2f> temp, saved;
     float pt1,pt2,pt3;
     float scale;
     ofPolyline line;

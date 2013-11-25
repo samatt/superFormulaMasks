@@ -2,8 +2,8 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-    //    ofSetVerticalSync(true);
-	ofSetFrameRate(120);
+    ofSetVerticalSync(true);
+	//ofSetFrameRate(120);
 	ofHideCursor();
 	oscIn.setup(12345);
 	oscOut.setup("surya.local", 12346);
@@ -28,22 +28,32 @@ void testApp::setup(){
     
     stkWeight = Integrator(22,.2f,.2f);
     
-    iRadius_ =200;
-    a_ = 1;
-    b_ = 1;
-    m_ = 2;
-    n1_ =20;
-    n2_ = 1;
-    n3_ = 1;
-    stkWeight_ = 22;
-
-
+    //    iRadius_ =200;
+    //    a_ = 1;
+    //    b_ = 1;
+    //    m_ = 2;
+    //    n1_ =20;
+    //    n2_ = 1;
+    //    n3_ = 1;
+    
+    iRadius_ =170;
+    a_ = 0.24;
+    b_ = 0.34;
+    m_ = 11.92;
+    n1_ =12.81;
+    n2_ = -2.71;
+    n3_ = 2.46;
+    
+    stkWeight_ = 3.5    ;
+    
+    
     setupGUI();
+    setupShaper();
 }
 void testApp::setupGUI(){
     float xInit = OFX_UI_GLOBAL_WIDGET_SPACING;
     float length = 255-xInit;
-//    gui->setFont("GUI/")
+    //    gui->setFont("GUI/")
     
     gui = new ofxUISuperCanvas("SUPER SHAPER");
     gui->addSpacer();
@@ -54,15 +64,33 @@ void testApp::setupGUI(){
     gui->addSlider("N1", 0, 100, &n1_);
     gui->addSlider("N2", -50, 100, &n2_);
     gui->addSlider("N3", -50, 100, &n3_);
-    gui->addSlider("STROKE", -50, 100, &stkWeight_);
+    gui->addSlider("STROKE",    0, 5, &stkWeight_);
     gui->addSpacer();
+    gui->addButton("SAVE SHAPE", false);
+    gui->addButton("DRAW CIRCLE", false);
+    gui->addButton("DRAW SUPERSHAPE", false);
+    gui->addButton("DRAW SUPERSHAPE FFT", false);
     gui->autoSizeToFitWidgets();
-
+    
     
     ofAddListener(gui->newGUIEvent, this, &testApp::guiEvent);
     
 }
-
+void testApp::setupShaper(){
+    
+    iRadius.setTarget(iRadius_);
+    
+    
+    a.setTarget(a_);
+    b.setTarget(b_);
+    m.setTarget(m_);
+    n1.setTarget(n1_);
+    n2.setTarget(n2_);
+    n3.setTarget(n3_);
+    
+    stkWeight.setTarget(stkWeight_);
+    
+}
 void testApp::guiEvent(ofxUIEventArgs &e){
     string name = e.widget->getName();
     
@@ -90,6 +118,24 @@ void testApp::guiEvent(ofxUIEventArgs &e){
     if (name == "STROKE") {
         stkWeight.setTarget(stkWeight_);
     }
+    if(name == "SAVE SHAPE"){
+        saved.clear();
+        saved = temp;
+    }
+    if(name == "DRAW CIRCLE"){
+        cout<<"setting mode : circle"<<endl;
+        currentMode = circle;
+    }
+    if(name == "DRAW SUPERSHAPE"){
+        currentMode = supershape;
+        setupShaper();
+        cout<<"setting mode : supershape"<<endl;
+    }
+    if(name == "DRAW SUPERSHAPE FFT"){
+        //currentMode = supershapeFFT;
+        bFFT = true;
+        cout<<"setting mode : supershapeFFT"<<endl;
+    }
 }
 //--------------------------------------------------------------
 void testApp::update(){
@@ -107,9 +153,9 @@ void testApp::update(){
                 
             }
             //2.7 and 1.1
-            float mapB = ofMap(fftData[fftData.size()/2],0,fftMax, 0.1,5.);
-            b_ = mapB;
-            b.setTarget(mapB);
+            //            float mapB = ofMap(fftData[fftData.size()/2],0,fftMax, 0.1,5.);
+            //            b_ = mapB;
+            //            b.setTarget(mapB);
             cout<<fftMax<<endl;
             
 		}
@@ -125,8 +171,8 @@ void testApp::update(){
             
 		}
 		if(msgIn.getAddress() == "/duration/info") {
-			string info = msgIn.getArgAsString(0);
-            cout<<info<<endl;
+            //			string info = msgIn.getArgAsString(0);
+            //            cout<<info<<endl;
             //			ofDirectory::createDirectory(directory, true, true);
 		}
 	}
@@ -139,7 +185,7 @@ void testApp::update(){
     n2.update();
     n3.update();
     stkWeight.update();
-
+    
 }
 
 //--------------------------------------------------------------
@@ -148,24 +194,77 @@ void testApp::draw(){
     ofBackground(ofColor::black);
     //if(fftData.size()>0){
     //    line.resize(fftData.size());
-     //   int rectWidth = ofGetWidth()/fftData.size();
-        ofSetColor(ofColor::white);
+    //   int rectWidth = ofGetWidth()/fftData.size();
+    ofSetColor(ofColor::white);
+    
+    ofSetLineWidth(2);
+    ofNoFill();
+    
+    ofSetColor(ofColor::white);
+    
+    glPushMatrix();
+    
+    //        glTranslatef(ofGetWidth()/2, ofGetHeight()/2, 0);
+    /*
+     ofBeginShape();
+     for (int i = 0; i <fftData.size(); i++){
+     float val =fftMax - fftData[i] * 128;
+     //            ofRect(i*rectWidth, 0, rectWidth,val);
+     //            ofCircle(ofGetWidth()/2, -ofGetHeight()/2, val*100);
+     
+     }
+     
+     float x,y;
+     float radius = 100;
+     float centX = ofGetWidth()/2;
+     float centY = -ofGetHeight()/2      ;
+     
+     for(int i =0; i< 360; i++){
+     int index = ofMap(i, 0, 360, 0, fftData.size());
+     
+     float radVariance =ofMap(fftData[index], 0, fftMax, 0, 1);
+     float thisRadius = radCurve + radVariance*100;
+     float rad = ofDegToRad(i);
+     x = centX + (thisRadius * cos(rad));
+     y = centY + (thisRadius * sin(rad));
+     ofCurveVertex(x, y);
+     
+     
+     }
+     
+     ofEndShape();
+     */
+    
+    
+    if(currentMode == supershape){
+        ofSetLineWidth(stkWeight.value);
+        superShape();
+    }
+    else if (currentMode == supershapeFFT){
         
-//        ofSetLineWidth(2);
-        ofNoFill();
+        superShapeFFT();
+    }
+    else if(currentMode == circle){
         
-        ofSetColor(ofColor::white);
-        
-        glPushMatrix();
-
-//        glTranslatef(ofGetWidth()/2, ofGetHeight()/2, 0);
-/*
+        circleFFT();
+    }
+    
+    glPopMatrix();
+    
+    //}
+    if(saveFrame){
+        ofSaveFrame();
+        cout<<"savingFrame!"<<endl;
+        saveFrame = false;
+    }
+    
+    
+}
+void testApp:: circleFFT(){
+    if(fftData.size() > 0){
         ofBeginShape();
         for (int i = 0; i <fftData.size(); i++){
             float val =fftMax - fftData[i] * 128;
-//            ofRect(i*rectWidth, 0, rectWidth,val);
-//            ofCircle(ofGetWidth()/2, -ofGetHeight()/2, val*100);
-            
         }
         
         float x,y;
@@ -183,49 +282,60 @@ void testApp::draw(){
             y = centY + (thisRadius * sin(rad));
             ofCurveVertex(x, y);
             
-
+            
         }
- 
-        ofEndShape();
-    */
-        ofSetLineWidth(stkWeight.value);
-        superShape();
-        glPopMatrix();
         
-    //}
-    if(saveFrame){
-        ofSaveFrame();
-        cout<<"savingFrame!"<<endl;
-        saveFrame = false;
+        ofEndShape();
+        
     }
-
-/*
- glPushMatrix();
- glTranslatef(ofGetWidth()/2, ofGetHeight()/2, 0);
- //    line.draw();
- //    ofBeginShape();
- //    ofVertex(0, fftMax * scale);
- //    ofVertex(-fftMax * scale, -fftMax*scale);
- //    ofVertex(fftMax * scale, -fftMax * scale);
- //    ofEndShape();
- glPopMatrix();
- 
- */
-}
-
-void testApp::superShape(){
     
+}
+void testApp::superShapeFFT(){
+    if(saved.size()>0){
+        if(fftData.size() > 0){
+            
+            ofBeginShape();
+            for (int i=0; i < saved.size(); i++) {
+                int fftIndex = ofMap(i, 0, saved.size(), 0, fftData.size());
+                float normFFT = fftData[fftIndex]/fftMax;
+                
+                saved[i].scale(normFFT*5);
+                ofCurveVertex(saved[i].x, saved[i].y);
+                
+            }
+            ofEndShape();
+        }
+    }
+}
+void testApp::superShape(){
+    temp.clear();
     ofBeginShape();
+    
     for(float theta = 0; theta <TWO_PI+0.001f; theta+=0.003f)
     {
         float raux  = pow(abs(1.0f/a.value)*abs(cos((m.value*theta/4.0f))),n2.value) + pow(abs(1.0f/b.value)*abs(sin(m.value*theta/4.0f)),n3.value);
         float r = iRadius.value*pow(abs(raux),(-1.0f/n1.value));
+        if(bFFT){
+            
+            
+            
+            int index = ofMap(theta, 0, TWO_PI+0.001f, 0, fftData.size());
+            float hue = ofMap(index, 0, fftData.size(), 0, 255);
+            float radVariance =ofMap(fftData[index], 0, fftMax, 0, 1);
+            r+=  radVariance*100;
+            //            ofColor c;
+            //            c.setHsb(hue, 200, 170);
+            //            ofSetColor(c);
+        }
+        
         float x=ofGetWidth()*.5f+r*cos(theta);
         float y=ofGetHeight()*.5f+r*sin(theta);
-        ofVertex(x,y);
+        
+        temp.push_back(ofVec2f(x,y));
+        ofCurveVertex(x,y);
     }
     
-    ofEndShape(true);
+    ofEndShape();
 }
 
 //--------------------------------------------------------------
