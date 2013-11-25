@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "Integrator.h"
+#include "ofxUI.h"
+
 class testApp : public ofBaseApp{
     
 public:
@@ -20,7 +22,8 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void superShape();
-    
+    void setupGUI();
+    void guiEvent(ofxUIEventArgs &e);
 	ofxOscReceiver oscIn;
 	ofxOscSender oscOut;
     vector<float> fftData;
@@ -33,6 +36,16 @@ public:
     Integrator n1;
     Integrator n2;
     Integrator n3;
+    Integrator stkWeight;
+
+    float iRadius_;
+    float a_;
+    float b_;
+    float m_;
+    float n1_;
+    float n2_;
+    float n3_;
+    float stkWeight_;
     
     ofMesh mesh;
     vector<ofVec2f> triangle;
@@ -44,4 +57,6 @@ public:
     
     bool saveFrame;
     float radCurve;
+    
+    ofxUISuperCanvas * gui;
 };

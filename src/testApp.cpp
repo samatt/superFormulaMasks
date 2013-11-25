@@ -9,6 +9,7 @@ void testApp::setup(){
 	oscOut.setup("surya.local", 12346);
     fftMax =0;
     scale =100;
+    ofEnableSmoothing();
     for(int i=0;i<10;i++){
         line.addVertex(100,0);
         line.addVertex(-100,0);
@@ -17,9 +18,79 @@ void testApp::setup(){
     ofEnableSmoothing();
     saveFrame =false;
     
+    iRadius = Integrator(200,.2f,.2f);
+    a = Integrator(1,.2f,.2f);
+    b = Integrator(1,.2f,.2f);
+    m =  Integrator(2,.2f,.2f);
+    n1 = Integrator(20,.2f,.2f);
+    n2 = Integrator(1,.2f,.2f);
+    n3 = Integrator(1,.2f,.2f);
+    
+    stkWeight = Integrator(22,.2f,.2f);
+    
+    iRadius_ =200;
+    a_ = 1;
+    b_ = 1;
+    m_ = 2;
+    n1_ =20;
+    n2_ = 1;
+    n3_ = 1;
+    stkWeight_ = 22;
+
+
+    setupGUI();
+}
+void testApp::setupGUI(){
+    float xInit = OFX_UI_GLOBAL_WIDGET_SPACING;
+    float length = 255-xInit;
+//    gui->setFont("GUI/")
+    
+    gui = new ofxUISuperCanvas("SUPER SHAPER");
+    gui->addSpacer();
+    gui->addSlider("RADIUS", 0, 500, &iRadius_);  //Parameters("name", low, high, default_value, x, y, length, height)
+    gui->addSlider("A", 0.1, 5.0, &a_);
+    gui->addSlider("B", 0.1, 5, &b_);
+    gui->addSlider("M", 0, 20, &m_);
+    gui->addSlider("N1", 0, 100, &n1_);
+    gui->addSlider("N2", -50, 100, &n2_);
+    gui->addSlider("N3", -50, 100, &n3_);
+    gui->addSlider("STROKE", -50, 100, &stkWeight_);
+    gui->addSpacer();
+    gui->autoSizeToFitWidgets();
+
+    
+    ofAddListener(gui->newGUIEvent, this, &testApp::guiEvent);
     
 }
 
+void testApp::guiEvent(ofxUIEventArgs &e){
+    string name = e.widget->getName();
+    
+    if (name == "RADIUS") {
+        iRadius.setTarget(iRadius_);
+    }
+    if (name == "A") {
+        a.setTarget(a_);
+    }
+    if (name == "B") {
+        b.setTarget(b_);
+    }
+    if (name == "M") {
+        m.setTarget(m_);
+    }
+    if (name == "N1") {
+        n1.setTarget(n1_);
+    }
+    if (name == "N2") {
+        n2.setTarget(n2_);
+    }
+    if (name == "N3") {
+        n3.setTarget(n3_);
+    }
+    if (name == "STROKE") {
+        stkWeight.setTarget(stkWeight_);
+    }
+}
 //--------------------------------------------------------------
 void testApp::update(){
 	ofxOscMessage msgIn;
@@ -33,7 +104,12 @@ void testApp::update(){
             for(int i =0; i< msgIn.getNumArgs(); i++ ){
                 fftData.push_back(msgIn.getArgAsFloat(i));
                 fftMax = MAX(fftMax, fftData[i]);
+                
             }
+            //2.7 and 1.1
+            float mapB = ofMap(fftData[fftData.size()/2],0,fftMax, 0.1,5.);
+            b_ = mapB;
+            b.setTarget(mapB);
             cout<<fftMax<<endl;
             
 		}
@@ -54,22 +130,36 @@ void testApp::update(){
             //			ofDirectory::createDirectory(directory, true, true);
 		}
 	}
+    
+    iRadius.update();
+    a.update();
+    b.update();
+    m.update();
+    n1.update();
+    n2.update();
+    n3.update();
+    stkWeight.update();
+
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
     ofBackgroundGradient(128, 0);
     ofBackground(ofColor::black);
-    if(fftData.size()>0){
-        line.resize(fftData.size());
-        int rectWidth = ofGetWidth()/fftData.size();
+    //if(fftData.size()>0){
+    //    line.resize(fftData.size());
+     //   int rectWidth = ofGetWidth()/fftData.size();
         ofSetColor(ofColor::white);
         
-        ofSetLineWidth(2);
+//        ofSetLineWidth(2);
         ofNoFill();
         
+        ofSetColor(ofColor::white);
+        
         glPushMatrix();
-        glTranslatef(0, ofGetHeight(), 0);
+
+//        glTranslatef(ofGetWidth()/2, ofGetHeight()/2, 0);
+/*
         ofBeginShape();
         for (int i = 0; i <fftData.size(); i++){
             float val =fftMax - fftData[i] * 128;
@@ -95,11 +185,14 @@ void testApp::draw(){
             
 
         }
-        
+ 
         ofEndShape();
+    */
+        ofSetLineWidth(stkWeight.value);
+        superShape();
         glPopMatrix();
         
-    }
+    //}
     if(saveFrame){
         ofSaveFrame();
         cout<<"savingFrame!"<<endl;
@@ -123,15 +216,16 @@ void testApp::draw(){
 void testApp::superShape(){
     
     ofBeginShape();
-    for(float theta = 0; theta <TWO_PI+0.001f; theta+=0.005f)
+    for(float theta = 0; theta <TWO_PI+0.001f; theta+=0.003f)
     {
-        float raux = pow(abs(1.0f/a.value)*abs(cos((m.value*theta/4.0f))),n2.value) + pow(abs(1.0f/b.value)*abs(sin(m.value*theta/4.0f)),n3.value);
+        float raux  = pow(abs(1.0f/a.value)*abs(cos((m.value*theta/4.0f))),n2.value) + pow(abs(1.0f/b.value)*abs(sin(m.value*theta/4.0f)),n3.value);
         float r = iRadius.value*pow(abs(raux),(-1.0f/n1.value));
         float x=ofGetWidth()*.5f+r*cos(theta);
         float y=ofGetHeight()*.5f+r*sin(theta);
         ofVertex(x,y);
     }
-    ofEndShape();
+    
+    ofEndShape(true);
 }
 
 //--------------------------------------------------------------

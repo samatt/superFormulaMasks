@@ -18,8 +18,8 @@ public:
     Integrator(float _value);
     Integrator(float _value, float _damping, float _attraction);
     
-    const float DAMPING = 0.5f;
-    const float ATTRACTION = 0.2f;
+    float DAMPING = 0.5f;
+    float ATTRACTION = 0.2f;
     
     float value;
     float vel;
