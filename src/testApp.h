@@ -11,6 +11,7 @@ typedef enum{
     circle =0,
     supershape,
     supershapeFFT,
+    supershapeFFT3D
 }drawMode;
     
 public:
@@ -38,6 +39,8 @@ public:
     vector<float> fftData;
     float fftMax;
     
+    ofEasyCam cam;
+    
     Integrator iRadius;
     Integrator a;
     Integrator b;
@@ -59,7 +62,8 @@ public:
     bool bFFT;
     ofMesh mesh;
     drawMode currentMode;
-    vector<ofVec2f> temp, saved;
+    vector<ofVec3f> temp;
+    vector<vector<ofVec3f> > toMesh;
     float pt1,pt2,pt3;
     float scale;
     ofPolyline line;

@@ -44,7 +44,9 @@ void testApp::setup(){
     n2_ = -2.71;
     n3_ = 2.46;
     
-    stkWeight_ = 3.5    ;
+    stkWeight_ = 3.5;
+    
+    cam.enableMouseInput();
     
     
     setupGUI();
@@ -70,6 +72,7 @@ void testApp::setupGUI(){
     gui->addButton("DRAW CIRCLE", false);
     gui->addButton("DRAW SUPERSHAPE", false);
     gui->addButton("DRAW SUPERSHAPE FFT", false);
+    gui->addButton("DRAW SUPERSHAPE 3D", false);
     gui->autoSizeToFitWidgets();
     
     
@@ -119,8 +122,12 @@ void testApp::guiEvent(ofxUIEventArgs &e){
         stkWeight.setTarget(stkWeight_);
     }
     if(name == "SAVE SHAPE"){
-        saved.clear();
-        saved = temp;
+        ofxUIButton* b = (ofxUIButton*)e.widget;
+        if(b->getValue()){
+            toMesh.push_back(temp);
+            cout<<toMesh.size()<<endl;
+        }
+        
     }
     if(name == "DRAW CIRCLE"){
         cout<<"setting mode : circle"<<endl;
@@ -131,9 +138,11 @@ void testApp::guiEvent(ofxUIEventArgs &e){
         setupShaper();
         cout<<"setting mode : supershape"<<endl;
     }
-    if(name == "DRAW SUPERSHAPE FFT"){
-        //currentMode = supershapeFFT;
-        bFFT = true;
+    if(name == "DRAW SUPERSHAPE 3D"){
+        superShapeFFT();
+        currentMode = supershapeFFT3D;
+        
+        
         cout<<"setting mode : supershapeFFT"<<endl;
     }
 }
@@ -152,14 +161,11 @@ void testApp::update(){
                 fftMax = MAX(fftMax, fftData[i]);
                 
             }
-            //2.7 and 1.1
-            //            float mapB = ofMap(fftData[fftData.size()/2],0,fftMax, 0.1,5.);
-            //            b_ = mapB;
-            //            b.setTarget(mapB);
             cout<<fftMax<<endl;
             
 		}
 		if(msgIn.getAddress() == "/saveFrame") {
+            toMesh.push_back(temp);
 			string filename = msgIn.getArgAsString(0);
             saveFrame = true;
             
@@ -204,54 +210,61 @@ void testApp::draw(){
     
     glPushMatrix();
     
-    //        glTranslatef(ofGetWidth()/2, ofGetHeight()/2, 0);
-    /*
-     ofBeginShape();
-     for (int i = 0; i <fftData.size(); i++){
-     float val =fftMax - fftData[i] * 128;
-     //            ofRect(i*rectWidth, 0, rectWidth,val);
-     //            ofCircle(ofGetWidth()/2, -ofGetHeight()/2, val*100);
-     
-     }
-     
-     float x,y;
-     float radius = 100;
-     float centX = ofGetWidth()/2;
-     float centY = -ofGetHeight()/2      ;
-     
-     for(int i =0; i< 360; i++){
-     int index = ofMap(i, 0, 360, 0, fftData.size());
-     
-     float radVariance =ofMap(fftData[index], 0, fftMax, 0, 1);
-     float thisRadius = radCurve + radVariance*100;
-     float rad = ofDegToRad(i);
-     x = centX + (thisRadius * cos(rad));
-     y = centY + (thisRadius * sin(rad));
-     ofCurveVertex(x, y);
-     
-     
-     }
-     
-     ofEndShape();
-     */
-    
     
     if(currentMode == supershape){
         ofSetLineWidth(stkWeight.value);
         superShape();
     }
-    else if (currentMode == supershapeFFT){
-        
-        superShapeFFT();
-    }
     else if(currentMode == circle){
+        if(mesh.getNumVertices()> 0){
+            ofPushMatrix();
+            cam.begin();
+            ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+            for (int i=0; i<mesh.getNumVertices(); i++) {
+                
+                ofSphere(mesh.getVertices()[i].x, mesh.getVertices()[i].y, mesh.getVertices()[i].z, 3);
+            }
+            cam.end();
+            ofPopMatrix();
+        }
+        //        circleFFT();
+    }
+    else if(currentMode == supershapeFFT3D){
+        if(mesh.getVertices().size()> 0){
+            ofPushMatrix();
+            cam.begin();
+            /*
+             ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+             //            ofRotate(ofGetMouseY(), 1, 0, 0);
+             //	mainMesh.drawFaces();
+             cout<<"drawing"<<endl;
+             //
+             GLuint vbo;
+             glGenBuffers( 1, &vbo );
+             glBindBuffer( GL_ARRAY_BUFFER, vbo );
+             glBufferData( GL_ARRAY_BUFFER, mesh.getVertices().size() * sizeof(ofVec3f), mesh.getVertices().data(), GL_STATIC_DRAW );
+             
+             glDrawArrays( GL_POINTS, 0, mesh.getVertices().size() );
+             
+             glDeleteBuffers(1, &vbo);
+             glFlush();
+             
+             */
+            
+            //            for (int i=0; i<mesh.getNumVertices(); i++) {
+            //
+            //                ofSphere(mesh.getVertices()[i].x, mesh.getVertices()[i].y, mesh.getVertices()[i].z, 10);
+            //            }
+            mesh.drawWireframe();
+            cam.end();
+            ofPopMatrix();
+            
+        }
         
-        circleFFT();
     }
     
     glPopMatrix();
     
-    //}
     if(saveFrame){
         ofSaveFrame();
         cout<<"savingFrame!"<<endl;
@@ -270,7 +283,7 @@ void testApp:: circleFFT(){
         float x,y;
         float radius = 100;
         float centX = ofGetWidth()/2;
-        float centY = -ofGetHeight()/2      ;
+        float centY = -ofGetHeight()/2;
         
         for(int i =0; i< 360; i++){
             int index = ofMap(i, 0, 360, 0, fftData.size());
@@ -291,20 +304,51 @@ void testApp:: circleFFT(){
     
 }
 void testApp::superShapeFFT(){
-    if(saved.size()>0){
-        if(fftData.size() > 0){
+    if(toMesh.size()>0){
+        mesh.clear();
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        cout<<"Making mesh"<<endl;
+        
+        //lay the slices nicely in z
+        for (int i=0; i < toMesh.size(); i++) {
+            //TODO: make the max z a parameter
             
-            ofBeginShape();
-            for (int i=0; i < saved.size(); i++) {
-                int fftIndex = ofMap(i, 0, saved.size(), 0, fftData.size());
-                float normFFT = fftData[fftIndex]/fftMax;
-                
-                saved[i].scale(normFFT*5);
-                ofCurveVertex(saved[i].x, saved[i].y);
-                
+            float zVal = ofMap(i, 0, toMesh.size(), 0, 500);
+            cout<<" no. of vertices in  "<<ofToString(i)<<" = "<<toMesh[i].size();
+            
+            for(int j=0; j<toMesh[i].size(); j++){
+                toMesh[i][j].z = zVal;
             }
-            ofEndShape();
         }
+        
+        //add vertices to the mesh
+        for (int i =0; i< toMesh.size(); i++){
+            for(int j= 0; j<toMesh[i].size(); j++)
+            {
+                mesh.addVertex(toMesh[i][j]  );
+            }
+        }
+        
+        //add index to the mesh
+        for (int y =0; y< toMesh.size() -1; y++){
+            int height = toMesh.size();
+            for(int x= 0; x<toMesh[y].size()-1; x++)
+            {
+                int width = toMesh[y].size();
+                
+                mesh.addIndex( x     +       (y * width  ));           //0
+                mesh.addIndex( x     +      ((y +1)  * width ));       //1
+                mesh.addIndex((x +1) +      ( y *width) );        //10
+                
+                mesh.addIndex( x      +     ( (y+ 1) *width));       //1
+                mesh.addIndex((x +1) +      ( (y+1) * width ));    //11
+                mesh.addIndex((x +1) +      ( y * width ));    //10
+            }
+        }
+        
+        
+        //
+        cout<<"Mesh has : "<<mesh.getNumVertices()<<" vertices "<<endl;
     }
 }
 void testApp::superShape(){
@@ -317,21 +361,16 @@ void testApp::superShape(){
         float r = iRadius.value*pow(abs(raux),(-1.0f/n1.value));
         if(bFFT){
             
-            
-            
             int index = ofMap(theta, 0, TWO_PI+0.001f, 0, fftData.size());
             float hue = ofMap(index, 0, fftData.size(), 0, 255);
             float radVariance =ofMap(fftData[index], 0, fftMax, 0, 1);
             r+=  radVariance*100;
-            //            ofColor c;
-            //            c.setHsb(hue, 200, 170);
-            //            ofSetColor(c);
         }
         
         float x=ofGetWidth()*.5f+r*cos(theta);
         float y=ofGetHeight()*.5f+r*sin(theta);
         
-        temp.push_back(ofVec2f(x,y));
+        temp.push_back(ofVec3f(x,y,0));
         ofCurveVertex(x,y);
     }
     

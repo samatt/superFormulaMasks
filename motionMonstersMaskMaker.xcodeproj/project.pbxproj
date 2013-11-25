@@ -11,6 +11,10 @@
 		152EAECABD008D84AF7F27F8 /* ofxEasingLinear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4CFDCEA412E8BCDACA9B26 /* ofxEasingLinear.cpp */; };
 		168C43F69AF6A8042EA0B13F /* easing_terms_of_use.html in Sources */ = {isa = PBXBuildFile; fileRef = 9AAEF50558BBDBEB5260FC35 /* easing_terms_of_use.html */; };
 		1859B3051842D02A005200CF /* Integrator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1859B3031842D02A005200CF /* Integrator.cpp */; };
+		1859B32218440938005200CF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1859B31818440937005200CF /* main.cpp */; };
+		1859B32318440938005200CF /* testApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1859B31918440937005200CF /* testApp.cpp */; };
+		1859B32418440938005200CF /* glm.c in Sources */ = {isa = PBXBuildFile; fileRef = 1859B31C18440937005200CF /* glm.c */; };
+		1859B32518440938005200CF /* ofxObjLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1859B32018440938005200CF /* ofxObjLoader.cpp */; };
 		27765D1BFF26BD9A6186915F /* ofxEasingCirc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4973CEF438C8931B5E03E0A /* ofxEasingCirc.cpp */; };
 		28090DEB5109115003E8F1C5 /* UdpSocketWin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5928AA323F5C2690B06C837D /* UdpSocketWin.cpp */; };
 		32FC7731C1EF7B87E491C93D /* ofxTween.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497F252390399FCF843297DA /* ofxTween.cpp */; };
@@ -63,6 +67,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1859B32718440938005200CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1859B31118440937005200CF /* example-objLoad.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E4B69B5B0A3A1756003C02F2;
+			remoteInfo = "example-objLoad";
+		};
 		E4328147138ABC890047C5CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
@@ -104,6 +115,19 @@
 		15E69017B5DB282EF100EE15 /* ofxUICustomImageButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUICustomImageButton.h; path = ../../../addons/ofxUI/src/ofxUICustomImageButton.h; sourceTree = SOURCE_ROOT; };
 		1859B3031842D02A005200CF /* Integrator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Integrator.cpp; sourceTree = "<group>"; };
 		1859B3041842D02A005200CF /* Integrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Integrator.h; sourceTree = "<group>"; };
+		1859B30C18440937005200CF /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		1859B31018440937005200CF /* sphere.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sphere.obj; sourceTree = "<group>"; };
+		1859B31118440937005200CF /* example-objLoad.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "example-objLoad.xcodeproj"; sourceTree = "<group>"; };
+		1859B31518440937005200CF /* openFrameworks-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "openFrameworks-Info.plist"; sourceTree = "<group>"; };
+		1859B31618440937005200CF /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+		1859B31818440937005200CF /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		1859B31918440937005200CF /* testApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testApp.cpp; sourceTree = "<group>"; };
+		1859B31A18440937005200CF /* testApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testApp.h; sourceTree = "<group>"; };
+		1859B31C18440937005200CF /* glm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glm.c; sourceTree = "<group>"; };
+		1859B31D18440937005200CF /* glm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glm.h; sourceTree = "<group>"; };
+		1859B31E18440938005200CF /* Readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.md; sourceTree = "<group>"; };
+		1859B32018440938005200CF /* ofxObjLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxObjLoader.cpp; sourceTree = "<group>"; };
+		1859B32118440938005200CF /* ofxObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxObjLoader.h; sourceTree = "<group>"; };
 		1902452F5E510A2DBC1E5BD6 /* ofxUIMultiImageToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUIMultiImageToggle.h; path = ../../../addons/ofxUI/src/ofxUIMultiImageToggle.h; sourceTree = SOURCE_ROOT; };
 		1C43CDB79BF40EA7424B9680 /* ofxUISuperCanvas.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUISuperCanvas.h; path = ../../../addons/ofxUI/src/ofxUISuperCanvas.h; sourceTree = SOURCE_ROOT; };
 		1E29C7E8C47E3E2DB1C58766 /* ofxUIRectangle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUIRectangle.h; path = ../../../addons/ofxUI/src/ofxUIRectangle.h; sourceTree = SOURCE_ROOT; };
@@ -264,6 +288,83 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1859B30B18440937005200CF /* ofxObjLoader */ = {
+			isa = PBXGroup;
+			children = (
+				1859B30C18440937005200CF /* .gitignore */,
+				1859B30D18440937005200CF /* example-objLoad */,
+				1859B31B18440937005200CF /* libs */,
+				1859B31E18440938005200CF /* Readme.md */,
+				1859B31F18440938005200CF /* src */,
+			);
+			name = ofxObjLoader;
+			path = ../../../addons/ofxObjLoader;
+			sourceTree = "<group>";
+		};
+		1859B30D18440937005200CF /* example-objLoad */ = {
+			isa = PBXGroup;
+			children = (
+				1859B30E18440937005200CF /* bin */,
+				1859B31118440937005200CF /* example-objLoad.xcodeproj */,
+				1859B31518440937005200CF /* openFrameworks-Info.plist */,
+				1859B31618440937005200CF /* Project.xcconfig */,
+				1859B31718440937005200CF /* src */,
+			);
+			path = "example-objLoad";
+			sourceTree = "<group>";
+		};
+		1859B30E18440937005200CF /* bin */ = {
+			isa = PBXGroup;
+			children = (
+				1859B30F18440937005200CF /* data */,
+			);
+			path = bin;
+			sourceTree = "<group>";
+		};
+		1859B30F18440937005200CF /* data */ = {
+			isa = PBXGroup;
+			children = (
+				1859B31018440937005200CF /* sphere.obj */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		1859B31218440937005200CF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1859B32818440938005200CF /* example-objLoadDebug.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1859B31718440937005200CF /* src */ = {
+			isa = PBXGroup;
+			children = (
+				1859B31818440937005200CF /* main.cpp */,
+				1859B31918440937005200CF /* testApp.cpp */,
+				1859B31A18440937005200CF /* testApp.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		1859B31B18440937005200CF /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				1859B31C18440937005200CF /* glm.c */,
+				1859B31D18440937005200CF /* glm.h */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		1859B31F18440938005200CF /* src */ = {
+			isa = PBXGroup;
+			children = (
+				1859B32018440938005200CF /* ofxObjLoader.cpp */,
+				1859B32118440938005200CF /* ofxObjLoader.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		1F293A20D2B096D59C4F24DD /* ofxTween */ = {
 			isa = PBXGroup;
 			children = (
@@ -407,6 +508,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				1859B30B18440937005200CF /* ofxObjLoader */,
 				E6053AB7FEC63D5F83825B88 /* ofxOsc */,
 				1F4FB5C423662B96ADFDCC0B /* ofxXmlSettings */,
 				1F293A20D2B096D59C4F24DD /* ofxTween */,
@@ -648,6 +750,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 1859B31218440937005200CF /* Products */;
+					ProjectRef = 1859B31118440937005200CF /* example-objLoad.xcodeproj */;
+				},
+				{
 					ProductGroup = E4328144138ABC890047C5CB /* Products */;
 					ProjectRef = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
 				},
@@ -660,6 +766,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		1859B32818440938005200CF /* example-objLoadDebug.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "example-objLoadDebug.app";
+			remoteRef = 1859B32718440938005200CF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E4328148138ABC890047C5CB /* openFrameworksDebug.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -725,6 +838,10 @@
 				FE278F5F783581237AE8ECB2 /* ofxEasingSine.cpp in Sources */,
 				32FC7731C1EF7B87E491C93D /* ofxTween.cpp in Sources */,
 				1859B3051842D02A005200CF /* Integrator.cpp in Sources */,
+				1859B32218440938005200CF /* main.cpp in Sources */,
+				1859B32318440938005200CF /* testApp.cpp in Sources */,
+				1859B32418440938005200CF /* glm.c in Sources */,
+				1859B32518440938005200CF /* ofxObjLoader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
